@@ -14,7 +14,6 @@ response = requests.get(url)
 soup = BeautifulSoup(response.content, 'html.parser')
 
 # Find the "Business" header
-business_header = soup.find('h2', string=lambda text: text and 'business' in text.lower())
-
-# Find all links after the "Business" header
-links = business_header.find_next_siblings('a')
+h2s = soup.find_all('h2')
+for h2 in h2s:
+    print(h2.text)
