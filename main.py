@@ -66,7 +66,7 @@ def create_table(df, file_name, engine):
     # take the first 60 character if the table name is longer than 60
     if len(table_name) > 60:
         table_name = table_name[:60]
-    df.to_sql(name=table_name, con=engine, if_exists='replace', index=False, schema='public')
+    df.to_sql(name=table_name, con=engine, if_exists='replace', index=False)
 
 
 def main():
