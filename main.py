@@ -9,10 +9,7 @@ import requests
 import logging
 from selenium import webdriver
 from config import db_uri
-
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger(__name__)
+from config import logger
 
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
@@ -58,6 +55,7 @@ def unzip_file(file_name):
 
 def get_file_name_from_url(url):
     return url.split('/')[-1]
+
 
 def create_table(df, file_name, engine):
     # remove the ending
