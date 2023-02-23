@@ -50,15 +50,9 @@ def main():
     for url in all_urls:
         file_name = get_file_name_from_url(url)
         if file_name.endswith('csv'):
-            df = pd.read_csv(url)
+            df = pd.read_csv(url, encoding='latin-1')
             print(df.head())
 
-
-
-if __name__ == '__main__':
-    this_url = 'https://www.stats.govt.nz/assets/Uploads/Business-operations-survey/Business-operations-survey-2021/Download-data/bos2021ModC.csv'
-    df = pd.read_csv(this_url, encoding='latin-1')
-    print(df.head())
 
 
 
