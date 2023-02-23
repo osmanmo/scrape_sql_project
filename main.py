@@ -9,8 +9,9 @@ import requests
 
 from selenium import webdriver
 
-
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
+
+
 def get_list_of_urls_in_business_section(base_url):
     driver = webdriver.Chrome()
     driver.get(base_url)
@@ -28,21 +29,19 @@ def get_list_of_urls_in_business_section(base_url):
     return complete_urls
 
 
-
-
 def download_file(url, file_name):
     with open(file_name, "wb") as file:
         response = requests.get(url)
         file.write(response.content)
 
+
 def unzip_file(file_name):
     with zipfile.ZipFile(file_name, 'r') as zip_ref:
         zip_ref.extractall()
 
+
 def get_file_name_from_url(url):
     return url.split('/')[-1]
-
-
 
 
 def main():
@@ -55,15 +54,5 @@ def main():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
