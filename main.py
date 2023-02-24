@@ -23,7 +23,6 @@ def get_list_of_urls_in_business_section(base_url):
 
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    print(soup.prettify())
     key_word = 'Business'
     # find all Filename
     # get the data-value first where id = 'pageViewData'
