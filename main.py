@@ -6,31 +6,36 @@ import sqlalchemy
 import zipfile
 from bs4 import BeautifulSoup
 import requests
-import logging
-from selenium import webdriver
 from config import db_uri
 from config import logger
+
+import json
 
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
 
 def get_list_of_urls_in_business_section(base_url):
-    logger.info('Getting list of urls in business section')
-    driver = webdriver.Chrome()
-    driver.get(base_url)
-    time.sleep(5)
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    key_word = 'Business'
-    h2s = soup.find_all('h2', text=key_word)
-    links = h2s[0].parent.find_all('a')
-    urls = [link['href'] for link in links]
-    urls = set(urls)
-    driver.close()
-    absolute_base_url = base_url.split('/')
-    absolute_base_url = absolute_base_url[0] + '//' + absolute_base_url[2]
-    complete_urls = [absolute_base_url + url for url in urls]
-    logger.info('Found {} urls'.format(len(complete_urls)))
+    # logger.info('Getting list of urls in business section')
+    # driver = webdriver.Chrome()
+    # driver.get(base_url)
+    # time.sleep(5)
+    # soup = BeautifulSoup(driver.page_source, 'html.parser')
 
+    response = requests.get(base_url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    print(soup.prettify())
+    key_word = 'Business'
+    # find all Filename
+    # get the data-value first where id = 'pageViewData'
+    data_value = soup.find('div', id='pageViewData')['data-value']
+    data_value = json.loads(data_value)
+    page_blocks = data_value['PageBlocks']
+    business_block = [block for block in page_blocks if block['Title'] == 'Business'][0]
+    block_documents = business_block['BlockDocuments']
+    urls = [block_document['DocumentLink'] for block_document in block_documents]
+    urls = set(urls)
+    absolute_base_url = base_url.split('/')[0] + '//' + base_url.split('/')[2]
+    complete_urls = [absolute_base_url + url for url in urls]
     return complete_urls
 
 
