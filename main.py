@@ -35,6 +35,7 @@ def get_list_of_urls_in_business_section(base_url):
     urls = set(urls)
     absolute_base_url = base_url.split('/')[0] + '//' + base_url.split('/')[2]
     complete_urls = [absolute_base_url + url for url in urls]
+    logger.info(complete_urls)
     return complete_urls
 
 
@@ -70,11 +71,12 @@ def create_table(df, file_name, engine):
     # take the first 60 character if the table name is longer than 60
     if len(table_name) > 60:
         table_name = table_name[:60]
-    df.to_sql(name=table_name, con=engine, if_exists='replace', index=False)
+    df.to_sql(name=table_name, con=engine, if_exists='replace', index=False, chunksize=1000)
 
 
 def main():
     engine = sqlalchemy.create_engine(db_uri)
+    logger.info(f"here is the db_uri {db_uri}")
     all_urls = get_list_of_urls_in_business_section(base_url)
     for url in all_urls:
         file_name = get_file_name_from_url(url)
@@ -93,9 +95,6 @@ def main():
                     if file.endswith('csv'):
                         df = pd.read_csv(file, encoding='latin-1')
                         create_table(df, file, engine)
-                    elif file.endswith('xlsx'):
-                        df = pd.read_excel(file)
-
                     os.remove(file)
 
                     # print(df.head())
@@ -104,9 +103,6 @@ def main():
                 if extracted_files.endswith('csv'):
                     df = pd.read_csv(extracted_files, encoding='latin-1')
                     create_table(df, extracted_files, engine)
-                elif extracted_files.endswith('xlsx'):
-                    df = pd.read_excel(extracted_files)
-                # print(df.head())
                 os.remove(extracted_files)
 
             os.remove(file_name)

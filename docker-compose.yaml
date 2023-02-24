@@ -1,0 +1,48 @@
+version: '3.8'
+
+x-airflow-common:
+  &airflow-common
+  build: .
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/etl/dags
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: mysql+pymysql://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASS}@${AIRFLOW_HOST}:${AIRFLOW_DB_PORT}/${AIRFLOW_DB_DBNAME}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__EXECUTOR: ${AIRFLOW_EXECUTOR:-LocalExecutor}
+  logging:
+    options:
+      max-size: 10m
+      max-file: "3"
+  volumes:
+    - .:/opt/airflow/etl
+    - etl_airflow_logs:/opt/airflow/logs
+    - etl_airflow_tmp:/opt/airflow/tmp
+  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
+
+services:
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+volumes:
+  etl_airflow_logs:
+  etl_airflow_tmp:
+
