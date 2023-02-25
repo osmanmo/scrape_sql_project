@@ -1,15 +1,17 @@
 import os
-import time
-
 import pandas as pd
 import sqlalchemy
 import zipfile
 from bs4 import BeautifulSoup
 import requests
-from config import db_uri
-from config import logger
-
+from settings import settings as config
+import logging
 import json
+
+
+logger = logging.getLogger(__name__)
+
+db_uri = config.SQLALCHEMY_DATABASE_URI
 
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
@@ -23,9 +25,7 @@ def get_list_of_urls_in_business_section(base_url):
 
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    key_word = 'Business'
-    # find all Filename
-    # get the data-value first where id = 'pageViewData'
+
     data_value = soup.find('div', id='pageViewData')['data-value']
     data_value = json.loads(data_value)
     page_blocks = data_value['PageBlocks']

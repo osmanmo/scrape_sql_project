@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 from main import main
+from settings import settings
 
 
 default_args = {
@@ -24,6 +25,6 @@ dag = DAG(
 
 with dag:
     accor_brand_update_feed = PythonOperator(
-        task_id="accor_property_update_feed",
+        task_id="scraping_task",
         python_callable=main,
     )
