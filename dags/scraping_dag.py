@@ -19,7 +19,7 @@ default_args = {
 dag = DAG(
     "1.nz_scraping_dag",
     default_args=default_args,
-    schedule_interval="0 0 * * 1",
+    schedule_interval="0 0 * * 2",
 )
 
 
