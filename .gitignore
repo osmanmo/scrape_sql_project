@@ -1,2 +1,4 @@
 
 /.env
+/settings/.*.json
+/.env.docker
