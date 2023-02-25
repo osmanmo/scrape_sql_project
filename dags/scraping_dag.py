@@ -15,11 +15,11 @@ default_args = {
     "catchup": False,
     "execution_timeout": timedelta(hours=12),
 }
-
+# run weekly
 dag = DAG(
     "1.nz_scraping_dag",
     default_args=default_args,
-    schedule_interval="0 5 * * *",
+    schedule_interval="0 0 * * 1",
 )
 
 

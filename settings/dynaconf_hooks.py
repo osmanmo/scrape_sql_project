@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 from sys import platform
 
@@ -44,6 +45,7 @@ def _get_environment(environment):
 
 
 def _get_sql_alchemy_conn_string(db_user, db_password, db_host, db_flavor, db_name, db_port):
+    db_host = _get_db_host_name(db_host)
     if db_flavor == "mysql":
         conn_str = "mysql+pymysql://%s:%s@%s:%s/%s" % (db_user, db_password, db_host, db_port, db_name)
     elif db_flavor == "mssql":
@@ -54,6 +56,19 @@ def _get_sql_alchemy_conn_string(db_user, db_password, db_host, db_flavor, db_na
     return conn_str
 
 
-if __name__ == "__main__":
-    x = str(Path(__file__).resolve().parent.parent)
-    print(x)
+def _is_running_in_docker():
+    path = '/proc/self/cgroup'
+    return (
+            os.path.exists('/.dockerenv') or
+            os.path.isfile(path) and any('docker' in line for line in open(path))
+    )
+
+
+def _get_db_host_name(db_host):
+    if db_host in ["localhost", "host.docker.internal"]:
+        if _is_running_in_docker():
+            return "host.docker.internal"
+        else:
+            return "localhost"
+    else:
+        return db_host
