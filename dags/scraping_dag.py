@@ -1,10 +1,17 @@
 from datetime import datetime, timedelta
 
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
 from main import main
 from settings import settings
+
+etl_env = Variable.get("ETL_ENV")
+settings = settings.from_env(etl_env)
+
+def run():
+    main(settings)
 
 
 default_args = {
@@ -26,5 +33,5 @@ dag = DAG(
 with dag:
     accor_brand_update_feed = PythonOperator(
         task_id="scraping_task",
-        python_callable=main,
+        python_callable=run,
     )

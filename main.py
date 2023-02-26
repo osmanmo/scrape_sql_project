@@ -11,8 +11,6 @@ import json
 
 logger = logging.getLogger(__name__)
 
-db_uri = config.SQLALCHEMY_DATABASE_URI
-
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
 
@@ -74,7 +72,8 @@ def create_table(df, file_name, engine):
     df.to_sql(name=table_name, con=engine, if_exists='replace', index=False, chunksize=1000)
 
 
-def main():
+def main(config):
+    db_uri = config.SQLALCHEMY_DATABASE_URI
     engine = sqlalchemy.create_engine(db_uri)
     logger.info(f"here is the db_uri {db_uri}")
     all_urls = get_list_of_urls_in_business_section(base_url)
@@ -109,6 +108,3 @@ def main():
 
     engine.dispose()
 
-
-if __name__ == '__main__':
-    main()
