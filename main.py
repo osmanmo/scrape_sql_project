@@ -8,19 +8,12 @@ from settings import settings as config
 import logging
 import json
 
-
 logger = logging.getLogger(__name__)
 
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
 
 def get_list_of_urls_in_business_section(base_url):
-    # logger.info('Getting list of urls in business section')
-    # driver = webdriver.Chrome()
-    # driver.get(base_url)
-    # time.sleep(5)
-    # soup = BeautifulSoup(driver.page_source, 'html.parser')
-
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -107,4 +100,3 @@ def main(config):
             os.remove(file_name)
 
     engine.dispose()
-
