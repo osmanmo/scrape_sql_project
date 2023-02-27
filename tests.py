@@ -72,6 +72,32 @@ class TestMain(unittest.TestCase):
         expected_rows = [(1, 'a'), (2, 'b'), (3, 'c')]
         assert rows == expected_rows, f"Expected {expected_rows}, but got {rows}"
 
+    @patch('main.pd.read_csv')
+    @patch('main.get_list_of_urls_in_business_section')
+    @patch('main.get_file_name_from_url')
+    @patch('main.download_file')
+    @patch('main.unzip_file')
+    @patch('main.create_table')
+    @patch('main.sqlalchemy.create_engine')
+    @patch('main.logger.info')
+    def test_main(self, mock_logger_info, mock_create_engine, mock_create_table, mock_unzip_file, mock_download_file,
+                  mock_get_file_name_from_url, mock_get_list_of_urls_in_business_section, mock_read_csv):
+        mock_read_csv.return_value = pd.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+        mock_config = Mock(SQLALCHEMY_DATABASE_URI='mock_db_uri')
+        mock_engine = Mock()
+        mock_create_engine.return_value = mock_engine
+        mock_get_file_name_from_url.return_value = 'mock_file_name.csv'
+        mock_get_list_of_urls_in_business_section.return_value = ['mock_url1.csv', 'mock_url2.zip']
+        mock_download_file.return_value = 'mock_url2.zip'
+        mock_unzip_file.return_value = ['mock_file1.csv', 'mock_file2.csv']
+        main.main(mock_config)
+        mock_logger_info.assert_called_with('was able to read csv file mock_file_name.csv')
+        mock_create_engine.assert_called_with('mock_db_uri')
+        mock_get_list_of_urls_in_business_section.assert_called_with(
+            'https://www.stats.govt.nz/large-datasets/csv-files-for-download')
+        mock_get_file_name_from_url.assert_called_with('mock_url2.zip')
+        mock_create_table.assert_called_with(mock_read_csv.return_value, 'mock_file_name.csv', mock_engine)
+
 
 if __name__ == '__main__':
     unittest.main()
