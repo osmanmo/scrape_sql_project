@@ -1,12 +1,12 @@
-import os
-import pandas as pd
-import sqlalchemy
-import zipfile
-from bs4 import BeautifulSoup
-import requests
-from settings import settings as config
-import logging
 import json
+import logging
+import os
+import zipfile
+
+import pandas as pd
+import requests
+import sqlalchemy
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
