@@ -1,13 +1,12 @@
 import os
 import unittest
 import zipfile
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch, Mock
 
-from bs4 import BeautifulSoup, Tag
-
-import main
 import pandas as pd
 from sqlalchemy import create_engine
+
+import main
 
 base_url = 'https://www.stats.govt.nz/large-datasets/csv-files-for-download'
 
