@@ -54,6 +54,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(urls, ['https://www.example.com/article1', 'https://www.example.com/article2'])
         mock_logger_info.assert_called_with(['https://www.example.com/article1', 'https://www.example.com/article2'])
         mock_requests_get.assert_called_with('https://www.example.com')
+
     def test_create_table(self):
         # Create a test DataFrame
         data = {'col1': [1, 2, 3], 'col2': ['a', 'b', 'c']}
