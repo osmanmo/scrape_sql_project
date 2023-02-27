@@ -1,7 +1,10 @@
 import os
 import unittest
 import zipfile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
+
+from bs4 import BeautifulSoup, Tag
+
 import main
 import pandas as pd
 from sqlalchemy import create_engine
@@ -41,6 +44,16 @@ class TestMain(unittest.TestCase):
         os.rmdir('folder1')
         os.remove('test.zip')
 
+    @patch('main.requests.get')
+    @patch('main.logger.info')
+    def test_gets_urls_from_business_section(self, mock_logger_info, mock_requests_get):
+        mock_response = """<div data-value='{"PageBlocks":[{"Title":"Business","BlockDocuments":
+        [{"DocumentLink":"/article1"},{"DocumentLink":"/article2"}]}]}' id="pageViewData"></div>"""
+        mock_requests_get.return_value = Mock(text=mock_response, spec_set=['status_code', 'text'])
+        urls = main.get_list_of_urls_in_business_section('https://www.example.com')
+        self.assertEqual(urls, ['https://www.example.com/article1', 'https://www.example.com/article2'])
+        mock_logger_info.assert_called_with(['https://www.example.com/article1', 'https://www.example.com/article2'])
+        mock_requests_get.assert_called_with('https://www.example.com')
     def test_create_table(self):
         # Create a test DataFrame
         data = {'col1': [1, 2, 3], 'col2': ['a', 'b', 'c']}
